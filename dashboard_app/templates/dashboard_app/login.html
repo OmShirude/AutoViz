@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('{% static "images/background.jpg" %}');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            border: 2px solid rgba(0, 128, 0, 0);
+            border-radius: 10px;
+            padding: 20px;
+            background-color: rgb(1, 8, 50);
+            width: 400px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0);
+        }
+        h2 {
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+        label {
+            color: rgb(230, 230, 230,0.9);
+            display: block;
+            text-transform: capitalize;
+            margin-top: 10px;
+        }
+        input {
+            width: 95%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: rgb(13, 45, 110);
+            color: rgb(230, 230, 230,0.9);
+            border: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .register-link a {
+            color: green;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <label>Username:</label>
+            <input type="text" name="username" required>
+            <label>Password:</label>
+            <input type="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <div class="register-link">
+            <p style="color: rgb(255, 255, 255);">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Database</title>
+    {% load static %}
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: url("{% static 'images/background.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background-color: rgba(1, 8, 50, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4 10px rgba(0, 0, 0, 0.6);
+            width: 320px;
+        }
+
+        .form-container h1 {
+            color: rgba(230, 230, 230, 0.85);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: rgba(230, 230, 230, 0.85);
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: rgba(230, 230, 230, 0.85);
+            color: black;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(13, 45, 110);
+            color: rgba(230, 230, 230, 0.85);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #002244;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setDefaultPort();  // Automatically set port when page loads
+        });
+        function setDefaultPort() {
+            let dbType = document.getElementById('db_type').value;
+            let portField = document.getElementById('db_port');
+
+            const defaultPorts = {
+                'mysql': 3306,
+                'postgresql': 5432,
+                'sqlite': '',
+                'mssql': 1433,
+                'oracle': 1521
+            };
+
+            portField.value = defaultPorts[dbType] || '';
+        }
+        document.getElementById("db_type").addEventListener("change", setDefaultPort);
+        function validateForm(event) {
+            let hostField = document.getElementById('db_host');
+            let portField = document.getElementById('db_port');
+
+            // Ensure localhost is represented as 127.0.0.1
+            if (hostField.value.toLowerCase() === 'localhost') {
+                hostField.value = '127.0.0.1';
+            }
+
+            // Ensure port is a valid positive number
+            let portValue = parseInt(portField.value);
+            if (isNaN(portValue) || portValue <= 0) {
+                alert("Invalid port number. Please enter a valid positive number.");
+                event.preventDefault();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Upload a Database</h1>
+        <form method="POST" action="{% url 'upload_database' %}" enctype="multipart/form-data" onsubmit="validateForm(event)">
+            {% csrf_token %}
+            
+            <label for="db_type">Database Type:</label>
+            <select id="db_type" name="db_type" onchange="setDefaultPort()" required>
+                <option value="mysql">MySQL</option>
+                <option value="postgresql">PostgreSQL</option>
+                <option value="sqlite">SQLite</option>
+                <option value="mssql">MSSQL</option>
+                <option value="oracle">Oracle</option>
+            </select>
+
+            <label for="db_username">Username:</label>
+            <input type="text" id="db_username" name="db_username" required>
+
+            <label for="db_password">Password:</label>
+            <input type="password" id="db_password" name="db_password" required>
+
+            <label for="db_host">Host:</label>
+            <input type="text" id="db_host" name="db_host" value="127.0.0.1" required>
+
+            <label for="db_port">Port:</label>
+            <input type="number" id="db_port" name="db_port" required>
+
+            <label for="db_name">Database Name:</label>
+            <input type="text" id="db_name" name="db_name" required>
+
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</body>
+</html>

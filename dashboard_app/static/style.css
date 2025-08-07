@@ -1,0 +1,94 @@
+/* Ensure full-screen layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+/* Background image on body */
+body {
+    background-image: url('../images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* This keeps the background fixed during scroll */
+}
+
+/* Make sure container takes full width */
+.container {
+    width: 100%;
+    max-width: none; /* Remove max-width restriction */
+    min-height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: transparent; /* Transparent background to show the image behind */
+}
+
+/* Image Section - Make images aligned properly */
+.image-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Make images responsive */
+.image-section img {
+    width: 15%; /* Adjust size based on screen */
+    max-width: 150px;
+}
+
+/* Style the heading */
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    color: #ffffff; /* Ensure text is visible against background */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.91); /* Optional: add shadow for better readability */
+}
+
+/* Login Button - Only Border Green */
+.login-btn {
+    display: inline-block;
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    background: rgb(0, 0, 0); /* Semi-transparent background for better readability */
+    font-size: 1.2rem;
+    margin: 20px 0;
+}
+
+/* Justify About Us Text */
+.about-us {
+    width: 80%;
+    max-width: 900px;
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.about-us h2 {
+    color: #000;
+}
+
+.about-us p {
+    text-align: justify;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #000;
+}
+
+footer {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 5px;
+}

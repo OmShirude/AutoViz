@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Query Interface</title>
+  <style>
+    body {
+      display: flex;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    .top-right {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      text-decoration: none;
+      color: white;
+      background-color: rgb(17, 59, 143);
+      border: 1px solid rgb(17, 59, 143);
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: rgb(17, 59, 143);
+      color: rgb(99, 142, 228);
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      margin-left: 20px;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      border: 2px solid #444;
+      padding: 10px;
+      height: 400px;
+      background-color: #111;
+      color: white;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+    }
+
+    textarea {
+      flex: 1;
+      height: 50px;
+      padding: 10px;
+      background-color: #222;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px;
+      background-color: rgb(13, 45, 110);
+      color: white;
+      border: 1px solid black;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: rgb(17, 59, 143);
+      color: rgb(99, 142, 228);
+    }
+  </style>
+</head>
+<body>
+    <div class="top-right" style="text-align: right;">
+        <div style="margin-bottom: 10px; font-weight: bold; font-size: 1.1em;">
+            Welcome, {{ request.user.username }}
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <a href="{% url 'upload_database' %}" class="btn">Change Database</a>
+            <a href="{% url 'logout' %}" class="btn">Logout</a>
+        </div>
+    </div>
+      
+
+  <div class="chat-container" id="chat-container">
+    <h1 style="color:rgb(240, 240, 240,0.95); margin-top: 70px;">Ask a Query</h1>
+    <div class="messages" id="messages"></div>
+    <div class="input-container">
+      <textarea id="query" placeholder="Type your query..."></textarea>
+      <button id="send-btn" onclick="sendQuery()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("query").addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        document.getElementById("send-btn").click();
+      }
+    });
+
+    function sendQuery() {
+      let queryText = document.getElementById("query").value.trim();
+      if (!queryText) return;
+
+      let messagesDiv = document.getElementById("messages");
+
+      let userMessage = document.createElement("div");
+      userMessage.innerHTML = `<b>You:</b> ${queryText}`;
+      messagesDiv.appendChild(userMessage);
+
+      document.getElementById("query").value = "";
+
+      fetch("/generate_dashboard/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie('csrftoken')
+        },
+        body: JSON.stringify({ user_query: queryText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        let botResponse = document.createElement("div");
+
+        if (data.error) {
+          botResponse.innerHTML = `<b>Error:</b> ${data.error}`;
+        } else if (data.chart_url) {
+          botResponse.innerHTML = `✅ <b>Chart Ready:</b> <a href="${data.chart_url}" target="_blank">Click here to view 📊</a>`;
+        } else {
+          const responseText = JSON.stringify(data);
+          const urlRegex = /(https?:\/\/[^\s"]+)/g;
+
+          const formattedText = responseText.replace(urlRegex, function(url) {
+            return `<a href="${url}" target="_blank" style="color: #66b3ff;">${url}</a>`;
+          });
+
+          botResponse.innerHTML = `<b>Response:</b> ${formattedText}`;
+        }
+
+        messagesDiv.appendChild(botResponse);
+      })
+      .catch(error => {
+        let botResponse = document.createElement("div");
+        botResponse.innerHTML = `<b>Error:</b> ${error}`;
+        messagesDiv.appendChild(botResponse);
+      });
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        let cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          let cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+</body>
+</html>
